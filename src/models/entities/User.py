@@ -12,8 +12,6 @@ class User(UserMixin):
     def check_password(self, hashed_password, password):
         return check_password_hash(hashed_password, password)
     
-    # @classmethod
-    # def passwordHash(self, password):
-    #     return generate_password_hash(password)
-    
-    # print('Contra ',generate_password_hash('123'))
+    @classmethod
+    def passwordHash(self, password):
+        return generate_password_hash(password)
