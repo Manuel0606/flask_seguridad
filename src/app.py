@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request, redirect, url_for, flash
 from config import *
 from flask_login import LoginManager, login_user, logout_user, login_required
 from flask_wtf.csrf import CSRFProtect
@@ -43,6 +43,35 @@ def login():
             return render_template('auth/login.html')
     else:
         return render_template('auth/login.html')
+
+@app.route('/new_user')
+def new_user():
+  return render_template('auth/new.html')
+
+@app.route('/signup', methods=['POST'])
+def add_user():
+  crearTablaUsers()
+  cursor = con_bd.cursor()
+
+  form = request.form
+  correo = form['correo']
+  password = form['password']
+  if correo and password:
+    sql = """
+    INSERT INTO
+      users (
+        correo,
+        password
+      )
+      VALUES
+      ( %s, %s);
+    """
+    
+    cursor.execute(sql,(correo, password))
+    con_bd.commit()
+    return redirect(url_for('index'))
+  else:
+    return "Error"
 
 @app.route('/home')
 @login_required
