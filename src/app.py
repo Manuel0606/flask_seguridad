@@ -2,6 +2,8 @@ from flask import Flask, render_template, request, redirect, url_for, flash
 from config import *
 from flask_login import LoginManager, login_user, logout_user, login_required
 from flask_wtf.csrf import CSRFProtect
+from flask_limiter import Limiter
+from flask_limiter.util import get_remote_address
 
 from models.ModelUser import ModelUser
 from models.entities.User import User
@@ -11,6 +13,8 @@ app = Flask(__name__)
 csrf = CSRFProtect()
 
 con_bd = EstablecerConexion()
+
+limiter = Limiter(app=app, key_func=get_remote_address)
 
 login_manager_app = LoginManager(app)
 
@@ -24,6 +28,7 @@ def index():
     return redirect(url_for('login'))
 
 @app.route('/login', methods=['GET', 'POST'])
+@limiter.limit("10/minute")
 def login():
     crearTablaUsers()
     if request.method == 'POST':
@@ -52,7 +57,6 @@ def new_user():
 def add_user():
   crearTablaUsers()
   cursor = con_bd.cursor()
-
   form = request.form
   correo = form['correo']
   password = User.passwordHash(form['password'])
@@ -66,7 +70,6 @@ def add_user():
       VALUES
       ( %s, %s);
     """
-
     cursor.execute(sql,(correo, password))
     con_bd.commit()
     return redirect(url_for('index'))
