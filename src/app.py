@@ -55,7 +55,7 @@ def add_user():
 
   form = request.form
   correo = form['correo']
-  password = form['password']
+  password = User.passwordHash(form['password'])
   if correo and password:
     sql = """
     INSERT INTO
@@ -66,7 +66,7 @@ def add_user():
       VALUES
       ( %s, %s);
     """
-    
+
     cursor.execute(sql,(correo, password))
     con_bd.commit()
     return redirect(url_for('index'))
