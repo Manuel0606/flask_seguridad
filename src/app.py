@@ -98,6 +98,7 @@ def crearTablaUsers():
 
 def status_401(error):
     return redirect(url_for('login'))
+    # return "<h1>Acceso invalido</h1>", 401
 
 def status_404(error):
     return "<h1>Página no encontrada</h1>", 404
